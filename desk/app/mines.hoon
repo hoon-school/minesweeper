@@ -1,4 +1,8 @@
-/-  *minesweeper
+  ::  /app/mines
+::::  Version ~2023.12.14
+::    ~lagrev-nocfep and ~tamlut-modnys
+::
+/-  *mines
 /+  dbug,
     default-agent
 ::
@@ -8,7 +12,8 @@
   ==
 +$  state-zero
   $:  %zero
-      patrons=(set ship)
+      =field
+      =board
   ==
 +$  card  card:agent:gall
 --

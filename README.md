@@ -1,4 +1,4 @@
-#   `%minesweeper`
+#   `%mines`
 
 - [ ] basic agent w/ state & pokes
 - [ ] display
