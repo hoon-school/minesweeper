@@ -12,8 +12,7 @@
   ==
 +$  state-zero
   $:  %zero
-      =field
-      =board
+      game-state
   ==
 +$  card  card:agent:gall
 --
@@ -37,44 +36,31 @@
 ++  on-poke
   |=  [=mark =vase]
   ^-  [(list card) _this]
-  ?>  ?=(%charlie-action mark)
+  ?>  ?=(%mines-action mark)
   =/  act  !<(action vase)
-  ?-    -.act
-      %push
-    ::  if targeting me, make the change
-    ?:  =(our.bowl target.act)
-      :-  ^-  (list card)
-          ~
-      %=  this
-        values  [value.act values]
-      ==
-    ::  if not targeting me, then send elsewhere
-    :-  ^-  (list card)
-        :~  [%pass /pokes %agent [target.act %charlie] %poke mark vase]
-        ==
-    this
-  ::
-      %pop
-    ::  if targeting me, make the change
-    ?:  =(our.bowl target.act)
-      :-  ^-  (list card)
-          ~
-      %=  this
-        values  ?~(values ~ t.values)
-      ==
-    ::  if not targeting me, then send elsewhere
-    :-  ^-  (list card)
-        :~  [%pass /pokes %agent [target.act %charlie] %poke mark vase]
-        ==
-    this
+  ?+    -.act  `this
+      %start
+    |^
+    :-  ~
+    %=  this
+      mines  (lay-mines coord.act n.act)
+      dims   coord.act
+    ==
+    ::  Generate random coordinate pairs
+    ++  lay-mines
+      |=  [dims=coord n=@]
+      ^-  ^mines
+      =/  rng  ~(. og eny.bowl)
+      =|  mines=(set coord)
+      |-  ^-  (set coord)
+      ?:  =(n ~(wyt in mines))  mines
+      =^  tx  rng  (rads:rng x.dims)
+      =^  ty  rng  (rads:rng y.dims)
+      $(mines (~(put in mines) [tx ty]))
+    --
   ==
 ::
-++  on-peek
-  |=  =path
-  ^-  (unit (unit cage))
-  ?+  path  (on-peek:default path)
-    [%x %values ~]  [~ ~ [%noun !>(values)]]
-  ==
+++  on-peek   on-peek:default
 ++  on-arvo   on-arvo:default
 ++  on-watch  on-watch:default
 ++  on-leave  on-leave:default

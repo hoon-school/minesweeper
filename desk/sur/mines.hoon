@@ -3,16 +3,19 @@
 ::    ~lagrev-nocfep and ~tamlut-modnys
 ::
 |%
-+$  mine   ?(%mine %none)
-+$  field  (list (list mine))
++$  mines  (set coord)
++$  tiles  (map coord tile)
++$  board  (list (list @tas))
 ::
-+$  tile
-  $%  [%seen ?(%0 %1 %2 %3 %4 %5 %6 %7 %8 %mine)]
-      [%hide flag=?]
++$  tile  ?(%0 %1 %2 %3 %4 %5 %6 %7 %8 %mine %flag %hide)
+::
++$  game-state
+  $:  =mines
+      =tiles
+      dims=coord
   ==
-+$  board  (list (list tile))
 ::
-++  coord  [x=@ y=@]
++$  coord  [x=@ y=@]
 ::
 +$  action
   $%  [%flag =coord]       :: toggle flag
