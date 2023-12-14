@@ -17,6 +17,12 @@ To flag a square:
 :mines &mines-action [%flag [5 5]]
 ```
 
+To probe a square:
+
+```hoon
+:mines &mines-action [%test [7 3]]
+```
+
 ---
 
 ```hoon

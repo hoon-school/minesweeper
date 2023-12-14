@@ -4,13 +4,16 @@
 ::
 |%
 +$  mines  (set coord)
++$  neighbors  (map coord num)
 +$  tiles  (map coord tile)
 +$  board  (list (list @tas))
 ::
-+$  tile  ?(%0 %1 %2 %3 %4 %5 %6 %7 %8 %mine %flag)
++$  num   ?(%0 %1 %2 %3 %4 %5 %6 %7 %8)
++$  tile  ?(num %mine %flag)
 ::
 +$  game-state
   $:  =mines
+      =neighbors
       =tiles
       dims=coord
   ==
