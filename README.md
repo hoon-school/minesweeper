@@ -5,6 +5,18 @@
 - [ ] generators
 - [ ] flood algorithm
 
+To start a game:
+
+```hoon
+:mines &mines-action [%start [10 10] 5]
+```
+
+To flag a square:
+
+```hoon
+:mines &mines-action [%flag [5 5]]
+```
+
 ---
 
 ```hoon

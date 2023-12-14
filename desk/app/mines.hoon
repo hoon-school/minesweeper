@@ -58,7 +58,34 @@
       =^  ty  rng  (rads:rng y.dims)
       $(mines (~(put in mines) [tx ty]))
     --
-  ==
+    ::
+      %flag
+    |^
+    ?>  &((lth x.coord.act x.dims) (lth y.coord.act y.dims))
+    :-  ~
+    %=  this
+      tiles  (toggle-flag coord.act)
+    ==
+    ::  Toggle flag
+    ++  toggle-flag
+      |=  =coord
+      ^-  ^tiles
+      =/  tile  (~(gut by tiles) coord %hide)
+      ?:  =(%flag tile)
+        :: toggle it off
+        (~(del by tiles) coord)
+      ?:  =(%hide tile)
+        :: toggle it on
+        (~(put by tiles) coord %flag)
+      tiles
+    --
+    ::
+    ::   %test
+    :: |^
+    :: ?>  &((lth x.coord.act x.dims) (lth y.coord.act y.dims))
+    :: :-  ~
+
+  ==  :: action
 ::
 ++  on-peek   on-peek:default
 ++  on-arvo   on-arvo:default
