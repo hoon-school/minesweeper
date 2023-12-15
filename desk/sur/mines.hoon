@@ -16,6 +16,7 @@
       =neighbors
       =tiles
       dims=coord
+      playing=_|
   ==
 ::
 +$  coord  [x=@ y=@]

@@ -38,12 +38,13 @@
   ^-  [(list card) _this]
   ?>  ?=(%mines-action mark)
   =/  act  !<(action vase)
-  ?+    -.act  `this
+  ?-    -.act
       %start
     |^
     =.  mines  (lay-mines coord.act n.act)
     =.  neighbors  *^neighbors
     =.  tiles  *^tiles
+    =.  playing  %.y
     :-  ~
     %=  this
       neighbors  get-neighbors
@@ -100,6 +101,7 @@
     ::
       %flag
     |^
+    ?>  playing
     ?>  &((lth x.coord.act x.dims) (lth y.coord.act y.dims))
     :-  ~
     %=  this
@@ -121,6 +123,7 @@
     ::
       %test
     |^
+    ?>  playing
     ?>  &((lth x.coord.act x.dims) (lth y.coord.act y.dims))
     ~&  >  "testing {<coord.act>}"
     :-  ~
@@ -142,19 +145,21 @@
         ?:  (~(has in mines) coord)
           ~&  >>>  'You stepped on a mine'
           :: TODO trigger game over
+          =.  playing  %.n
           tiles
-        :: ?:  (~(has by neighbors) coord)
-        ::   :: TODO reveal one square
-        ::   tiles
-        (flood coord)
+        ?:  (~(has by neighbors) coord)
+          (~(put by tiles) coord `^tile`(~(got by neighbors) coord))
+        :: fallthrough case, found an empty non-neighbor so flood search
+        :: (~(uni by tiles) (flood coord (silt ~[coord])))
+        ~&  >  'fallthrough flood'
+        =/  flood-set  (flood coord *(set ^coord))
+        ~&  >>>  flood-set
+        tiles
       ==
+    ::  This is straightforward stack-based recursive eight-way flood fill.
     ++  flood
-      |=  =coord
-      ^-  ^tiles
-      ~&  >>>  [coord tiles]
-      ?:  (~(has by tiles) coord)  tiles
-      ?:  (~(has by neighbors) coord)
-        (~(put by tiles) coord `tile`(~(got by neighbors) coord))
+      |=  [=coord worklist=(set coord)]
+      ^+  worklist
       :: get list of neighbors and flood them recursively
       =/  coords=(list ^coord)
         %~  tap  in
@@ -174,10 +179,20 @@
             ==
           coord
         ~(key by tiles)
-      ~&  >>  coords
+      =.  worklist  (~(uni in worklist) (silt coords))
       |-
-      ?~  coords  tiles
-      $(tiles (flood i.coords), coords t.coords)
+      ?~  coords  worklist
+      ::  in worklist already?
+      ?:  (~(has in worklist) i.coords)
+        ~&  >  i.coords
+        $(coords t.coords)
+      ::  just a neighbor (border)?
+      ?:  (~(has by neighbors) i.coords)
+        ~&  >>  i.coords
+        $(worklist (~(put in worklist) i.coords), coords t.coords)
+      ::  otherwise, in interior
+      ~&  >>>  i.coords
+      $(worklist (~(uni in worklist) (flood i.coords worklist)), coords t.coords)
     ++  dec
       |=  p=@
       ^-  @
@@ -187,6 +202,36 @@
       ^-  @
       ?:(=(q p) q +(p))
     --
+    ::
+      %view
+    =|  i=@
+    =|  j=@
+    =/  out    *tang
+    =/  qrose  *(list tank)
+    |-
+    ?:  (gte j y.dims)
+      =/  rose  `tank`[%rose [" " " " " "] (flop qrose)]
+      %=  $
+        i      +(i)
+        j      0
+        out    `tang`[rose out]
+        qrose  *(list tank)
+      ==
+    ?:  (gte i x.dims)
+      =.  out  (flop out)
+      |-
+      ?~  out  [~ this]
+      ~&  ~(ram re i.out)
+      $(out t.out)
+    =/  bit  (~(gut by tiles) [i j] %hide)
+    =/  blit
+      ?-  bit
+        ?(%0 %1 %2 %3 %4 %5 %6 %7 %8)  '{<`@`bit>}'
+        %mine  '×'
+        %flag  'F'
+        %hide  '.'
+      ==
+    $(j +(j), qrose [blit qrose])
   ==  :: action
 ::
 ++  on-peek   on-peek:default

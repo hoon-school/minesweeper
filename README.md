@@ -23,6 +23,14 @@ To probe a square:
 :mines &mines-action [%test [7 3]]
 ```
 
+To view the board:
+
+```hoon
+:mines &mines-action [%view ~]
+```
+
+The trouble with the original flood fill is that it kept adding back in previously-checked squares.
+
 ---
 
 ```hoon
