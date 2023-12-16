@@ -76,14 +76,15 @@
         ^-  (set ^coord)
         %-  silt
         ^-  (list ^coord)
-        :~  [(dec x.coord) (dec y.coord)]
-            [(dec x.coord) y.coord]
-            [(dec x.coord) (inc y.coord y.dims)]
-            [x.coord (dec y.coord)]
-            [x.coord (inc y.coord y.dims)]
-            [(inc x.coord x.dims) (dec y.coord)]
-            [(inc x.coord x.dims) y.coord]
-            [(inc x.coord x.dims) (inc y.coord y.dims)]
+        :~  :-  (dec x.coord)         (dec y.coord)
+            :-  (dec x.coord)              y.coord
+            :-  (dec x.coord)         (inc y.coord y.dims)
+            :-       x.coord          (dec y.coord)
+        ::  :-       x.coord               y.coord
+            :-       x.coord          (inc y.coord y.dims)
+            :-  (inc x.coord x.dims)  (dec y.coord)
+            :-  (inc x.coord x.dims)       y.coord
+            :-  (inc x.coord x.dims)  (inc y.coord y.dims)
         ==
       |-
       ?~  coords  neighbors
@@ -218,6 +219,36 @@
         %mine  '×'
         %flag  'F'
         %hide  '.'
+      ==
+    $(j +(j), qrose [blit qrose])
+    ::
+      %debug
+    =|  i=@
+    =|  j=@
+    =/  out    *tang
+    =/  qrose  *(list tank)
+    |-
+    ?:  (gte j y.dims)
+      =/  rose  `tank`[%rose [" " " " " "] (flop qrose)]
+      %=  $
+        i      +(i)
+        j      0
+        out    `tang`[rose out]
+        qrose  *(list tank)
+      ==
+    ?:  (gte i x.dims)
+      =.  out  (flop out)
+      |-
+      ?~  out  [~ this]
+      ~&  ~(ram re i.out)
+      $(out t.out)
+    =/  minelist  `(list (pair coord tile))`(turn ~(tap in mines) |=(=coord [coord %mine]))
+    =/  bit  (~(gut by (~(gas by `(map coord tile)`neighbors) minelist)) [i j] %0)
+    =/  blit
+      ?-  bit
+        ?(%0 %1 %2 %3 %4 %5 %6 %7 %8)  (crip "{<`@`bit>}")
+        %mine  '×'
+        %flag  'F'
       ==
     $(j +(j), qrose [blit qrose])
   ==  :: action

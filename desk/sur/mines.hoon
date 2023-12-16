@@ -24,7 +24,8 @@
 +$  action
   $%  [%flag =coord]       :: toggle flag
       [%test =coord]       :: reveal mine
-      [%view ~]            :: display board
+      [%view ~]            :: display tiles (seen board)
+      [%debug ~]           :: display whole board
       [%start =coord n=@]  :: start game
   ==
 --
