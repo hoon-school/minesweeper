@@ -1,10 +1,5 @@
 #   `%mines`
 
-- [ ] basic agent w/ state & pokes
-- [ ] display
-- [ ] generators
-- [ ] flood algorithm
-
 To start a game:
 
 ```hoon
@@ -29,19 +24,42 @@ To view the board:
 :mines &mines-action [%view ~]
 ```
 
-The trouble with the original flood fill is that it kept adding back in previously-checked squares.
+To debug view the underlying minefield:
+
+```hoon
+:mines &mines-action [%debug ~]
+```
 
 ---
 
-```hoon
-      ::  XX this is the list version
-      :: =/  rng  ~(. og eny)
-      :: =|  mines=(list coord)
-      :: =.  mines
-      ::   |-  ^-  (list coord)
-      ::   ?:  =(0 n)  mines
-      ::   =^  tx  rng  (rads:rng x.dims.field)
-      ::   =^  ty  rng  (rads:rng y.dims.field)
-      ::   $(mines [[tx ty] mines], n (dec n))
-      ::  XX this is the set version
+```
+> :mines &mines-action [%start [10 10] 8]
+
+> :mines &mines-action [%debug ~]
+" 0 0 1 × 1 0 1 × 1 0 "
+" 0 0 1 1 1 0 1 1 1 0 "
+" 0 0 0 1 1 1 0 1 1 1 "
+" 0 0 1 2 × 1 0 1 × 1 "
+" 0 0 1 × 3 2 0 1 2 2 "
+" 0 0 2 3 × 1 0 0 1 × "
+" 0 0 1 × 2 1 0 0 1 1 "
+" 0 0 1 1 1 0 0 0 0 0 "
+" 0 0 0 0 0 0 0 0 0 0 "
+" 0 0 0 0 0 0 0 0 0 0 "
+
+> :mines &mines-action [%test [1 1]]
+>   "testing [x=1 y=1]"
+>   'Hit an empty tile, searching for borders'
+
+> :mines &mines-action [%view ~]
+" 0 0 1 . 1 0 1 . . . "
+" 0 0 1 1 1 0 1 1 . . "
+" 0 0 0 1 1 1 0 1 . . "
+" 0 0 1 2 . 1 0 1 . . "
+" 0 0 1 . . 2 0 1 2 . "
+" 0 0 2 . . 1 0 0 1 . "
+" 0 0 1 . 2 1 0 0 1 1 "
+" 0 0 1 1 1 0 0 0 0 0 "
+" 0 0 0 0 0 0 0 0 0 0 "
+" 0 0 0 0 0 0 0 0 0 0 "
 ```
