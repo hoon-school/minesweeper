@@ -118,6 +118,7 @@
       ?:  =(%hide tile)
         :: toggle it on
         (~(put by tiles) coord %flag)
+      ::  TODO check win condition
       tiles
     --
     ::
@@ -146,53 +147,40 @@
           ~&  >>>  'You stepped on a mine'
           :: TODO trigger game over
           =.  playing  %.n
-          tiles
+          (~(put by tiles) coord %mine)
         ?:  (~(has by neighbors) coord)
           (~(put by tiles) coord `^tile`(~(got by neighbors) coord))
         :: fallthrough case, found an empty non-neighbor so flood search
-        :: (~(uni by tiles) (flood coord (silt ~[coord])))
-        ~&  >  'fallthrough flood'
-        =/  flood-set  (flood coord *(set ^coord))
-        ~&  >>>  flood-set
-        tiles
+        ~&  >  'Hit an empty tile, searching for borders'
+        (flood coord)
       ==
     ::  This is straightforward stack-based recursive eight-way flood fill.
     ++  flood
-      |=  [=coord worklist=(set coord)]
-      ^+  worklist
-      :: get list of neighbors and flood them recursively
-      =/  coords=(list ^coord)
-        %~  tap  in
-        %-  %~  dif  in
-          %-  %~  del  in
-            ^-  (set ^coord)
-            %-  silt
-            ^-  (list ^coord)
-            :~  [(dec x.coord) (dec y.coord)]
-                [(dec x.coord) y.coord]
-                [(dec x.coord) (inc y.coord y.dims)]
-                [x.coord (dec y.coord)]
-                [x.coord (inc y.coord y.dims)]
-                [(inc x.coord x.dims) (dec y.coord)]
-                [(inc x.coord x.dims) y.coord]
-                [(inc x.coord x.dims) (inc y.coord y.dims)]
-            ==
-          coord
-        ~(key by tiles)
-      =.  worklist  (~(uni in worklist) (silt coords))
+      |=  =coord
+      ^+  tiles
+      ?.  =(%0 (~(gut by neighbors) coord %0))
+        (~(put by tiles) coord (~(got by neighbors) coord))
+      =.  tiles  (~(put by tiles) coord %0)
+      =/  coords  ~(tap in (get-neighbors coord))
       |-
-      ?~  coords  worklist
-      ::  in worklist already?
-      ?:  (~(has in worklist) i.coords)
-        ~&  >  i.coords
-        $(coords t.coords)
-      ::  just a neighbor (border)?
-      ?:  (~(has by neighbors) i.coords)
-        ~&  >>  i.coords
-        $(worklist (~(put in worklist) i.coords), coords t.coords)
-      ::  otherwise, in interior
-      ~&  >>>  i.coords
-      $(worklist (~(uni in worklist) (flood i.coords worklist)), coords t.coords)
+      ?~  coords  tiles
+      =?  tiles  !(~(has by tiles) i.coords)  (flood i.coords)
+      $(coords t.coords)
+    ++  get-neighbors
+      |=  =coord
+      ^-  (set ^coord)
+      %-  silt
+      ^-  (list ^coord)
+      :~  :-  (dec x.coord)         (dec y.coord)
+          :-  (dec x.coord)              y.coord
+          :-  (dec x.coord)         (inc y.coord y.dims)
+          :-       x.coord          (dec y.coord)
+      ::  :-       x.coord               y.coord
+          :-       x.coord          (inc y.coord y.dims)
+          :-  (inc x.coord x.dims)  (dec y.coord)
+          :-  (inc x.coord x.dims)       y.coord
+          :-  (inc x.coord x.dims)  (inc y.coord y.dims)
+      ==
     ++  dec
       |=  p=@
       ^-  @
@@ -226,7 +214,7 @@
     =/  bit  (~(gut by tiles) [i j] %hide)
     =/  blit
       ?-  bit
-        ?(%0 %1 %2 %3 %4 %5 %6 %7 %8)  '{<`@`bit>}'
+        ?(%0 %1 %2 %3 %4 %5 %6 %7 %8)  (crip "{<`@`bit>}")
         %mine  '×'
         %flag  'F'
         %hide  '.'
